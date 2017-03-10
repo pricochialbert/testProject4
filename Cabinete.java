@@ -9,6 +9,6 @@ public class Cabinete extends JPanel {
 	 */
 	public Cabinete() {
 
-	}
+	} //this is a comment
 
 }
