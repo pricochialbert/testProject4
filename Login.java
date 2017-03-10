@@ -1,4 +1,4 @@
-
+package testProject4;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
+import java.awt.Font;
 
 public class Login {
 
@@ -61,25 +62,28 @@ public class Login {
 		panel.setLayout(null);
 		
 		txtUsername = new JTextField();
-		txtUsername.setBounds(230, 93, 114, 19);
+		txtUsername.setBounds(313, 114, 114, 19);
 		panel.add(txtUsername);
 		txtUsername.setColumns(10);
 		
-		JLabel lblUsername = new JLabel("username");
-		lblUsername.setBounds(89, 93, 123, 19);
+		JLabel lblUsername = new JLabel("Nume Utilizator");
+		lblUsername.setFont(new Font("Arial", Font.BOLD, 14));
+		lblUsername.setBounds(189, 114, 114, 19);
 		panel.add(lblUsername);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(230, 144, 114, 19);
+		passwordField.setBounds(313, 177, 114, 19);
 		panel.add(passwordField);
 		
-		JLabel lblPassword = new JLabel("password");
-		lblPassword.setBounds(89, 144, 123, 19);
+		JLabel lblPassword = new JLabel("Parola");
+		lblPassword.setFont(new Font("Arial", Font.BOLD, 14));
+		lblPassword.setBounds(242, 177, 61, 19);
 		panel.add(lblPassword);
 		
 		PanelOptions options = new PanelOptions();
 				
 		JButton btnLogin = new JButton("Login");
+		btnLogin.setFont(new Font("Arial", Font.BOLD, 16));
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent args0) {
 				try{
@@ -104,7 +108,7 @@ public class Login {
 					} else if (count < 1){
 						JOptionPane.showMessageDialog(null, "Duplicate user and password");
 					} else {
-						JOptionPane.showMessageDialog(null, "Usename and possword is incorrect");
+						JOptionPane.showMessageDialog(null, "Usename and password is incorrect");
 					}
 					rs.close();
 					pst.close();
@@ -113,7 +117,7 @@ public class Login {
 				} 
 			}
 		});
-		btnLogin.setBounds(230, 224, 117, 25);
+		btnLogin.setBounds(296, 246, 131, 60);
 		panel.add(btnLogin);
 		frame.setBounds(100, 100, 800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
