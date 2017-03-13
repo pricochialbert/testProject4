@@ -1,9 +1,13 @@
 package testProject4;
 
+import java.sql.*;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+import net.proteanit.sql.DbUtils;
+
 import java.awt.FlowLayout;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
@@ -13,6 +17,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
 import javax.swing.JList;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
 
 public class Receptie extends JPanel {
 	private JTextField txtNume;
@@ -22,11 +30,14 @@ public class Receptie extends JPanel {
 	private JTextField textData;
 	private JTextField textPlata;
 	private JTextField textDataLab;
+	private JTable table;
 
 	/**
 	 * Create the panel.
 	 */
+	Connection connection = null;
 	public Receptie() {
+		connection=sqliteConnection.dbConnector();
 		setLayout(new BorderLayout(0, 0));
 		
 		JPanel panel = new JPanel();
@@ -115,26 +126,34 @@ public class Receptie extends JPanel {
 		panel.add(Label_Doctor);
 		
 		JButton btnNewButton_Salveaza = new JButton("SALVEAZA");
+		btnNewButton_Salveaza.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnNewButton_Salveaza.setFont(new Font("Arial", Font.BOLD, 14));
-		btnNewButton_Salveaza.setBounds(87, 488, 138, 54);
+		btnNewButton_Salveaza.setBounds(45, 488, 117, 54);
 		panel.add(btnNewButton_Salveaza);
 		
 		JLabel Label_Plata = new JLabel("TOTAL PLATA");
 		Label_Plata.setFont(new Font("Arial", Font.BOLD, 14));
-		Label_Plata.setBounds(501, 418, 103, 20);
+		Label_Plata.setBounds(488, 211, 103, 20);
 		panel.add(Label_Plata);
 		
 		textPlata = new JTextField();
 		textPlata.setHorizontalAlignment(SwingConstants.CENTER);
 		textPlata.setFont(new Font("Arial", Font.BOLD, 14));
 		textPlata.setBackground(SystemColor.info);
-		textPlata.setBounds(611, 403, 103, 52);
+		textPlata.setBounds(601, 207, 103, 30);
 		panel.add(textPlata);
 		textPlata.setColumns(10);
 		
 		JButton btnNewButton_Chitanta = new JButton("GENEREAZA CHITANTA");
+		btnNewButton_Chitanta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnNewButton_Chitanta.setFont(new Font("Arial", Font.BOLD, 14));
-		btnNewButton_Chitanta.setBounds(548, 488, 201, 54);
+		btnNewButton_Chitanta.setBounds(512, 248, 201, 20);
 		panel.add(btnNewButton_Chitanta);
 		
 		JLabel Label_progLab = new JLabel("PROGRAMARE LABORATOR");
@@ -144,35 +163,39 @@ public class Receptie extends JPanel {
 		
 		JLabel Label_Laborator = new JLabel("LABORATOR");
 		Label_Laborator.setFont(new Font("Arial", Font.BOLD, 14));
-		Label_Laborator.setBounds(489, 100, 97, 14);
+		Label_Laborator.setBounds(501, 85, 97, 14);
 		panel.add(Label_Laborator);
 		
 		JLabel Label_DataLab = new JLabel("DATA");
 		Label_DataLab.setFont(new Font("Arial", Font.BOLD, 14));
-		Label_DataLab.setBounds(501, 170, 46, 14);
+		Label_DataLab.setBounds(501, 122, 46, 14);
 		panel.add(Label_DataLab);
 		
 		textDataLab = new JTextField();
 		textDataLab.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		textDataLab.setHorizontalAlignment(SwingConstants.CENTER);
 		textDataLab.setBackground(SystemColor.info);
-		textDataLab.setBounds(557, 167, 157, 20);
+		textDataLab.setBounds(554, 122, 157, 20);
 		panel.add(textDataLab);
 		textDataLab.setColumns(10);
 		
 		JButton btnNewButton_SalveazaLab = new JButton("SALVEAZA");
+		btnNewButton_SalveazaLab.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnNewButton_SalveazaLab.setFont(new Font("Arial", Font.BOLD, 14));
-		btnNewButton_SalveazaLab.setBounds(573, 218, 132, 47);
+		btnNewButton_SalveazaLab.setBounds(554, 167, 117, 20);
 		panel.add(btnNewButton_SalveazaLab);
 		
 		JRadioButton RadioButton_Analiza = new JRadioButton("ANALIZE");
 		RadioButton_Analiza.setFont(new Font("Arial", Font.BOLD, 12));
-		RadioButton_Analiza.setBounds(596, 71, 109, 23);
+		RadioButton_Analiza.setBounds(596, 57, 109, 23);
 		panel.add(RadioButton_Analiza);
 		
 		JRadioButton RadioButton_Radiologie = new JRadioButton("RADIOLOGIE");
 		RadioButton_Radiologie.setFont(new Font("Arial", Font.BOLD, 12));
-		RadioButton_Radiologie.setBounds(596, 119, 122, 23);
+		RadioButton_Radiologie.setBounds(596, 96, 122, 23);
 		panel.add(RadioButton_Radiologie);
 		
 		JRadioButton RadioButton_MedGenerala = new JRadioButton("MEDICINA GENERALA");
@@ -190,6 +213,35 @@ public class Receptie extends JPanel {
 		list_Doctori.setBackground(SystemColor.info);
 		list_Doctori.setBounds(129, 441, 175, 20);
 		panel.add(list_Doctori);
+		
+		JButton btnNewButton_RaportProgramari = new JButton("Raport Programari");
+		btnNewButton_RaportProgramari.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try{
+					String query="SELECT nume, prenume, Cabinet, Doctor, DataSiOra FROM Programari";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					table.setModel(DbUtils.resultSetToTableModel(rs));
+					
+				}catch(Exception ex) 
+				{
+					ex.printStackTrace();
+				}
+				
+			}
+		
+		});
+		btnNewButton_RaportProgramari.setFont(new Font("Arial", Font.BOLD, 14));
+		btnNewButton_RaportProgramari.setBounds(182, 503, 169, 25);
+		panel.add(btnNewButton_RaportProgramari);
+		
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setBounds(361, 315, 418, 258);
+		panel.add(scrollPane);
+		scrollPane.getViewport().add(table);
+		 
+		table = new JTable();
+		scrollPane.setViewportView(table);
 		
 	}
 }
