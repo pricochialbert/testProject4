@@ -1,0 +1,165 @@
+package testProject4;
+
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import PanelOptions;
+import sqliteConnection;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.Color;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
+public class Login {
+
+	public static JFrame frmAutentificare;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				
+				try {
+					Login window = new Login();
+					window.frmAutentificare.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	Connection connection=null;
+	private JTextField txtUsername;
+	private JPasswordField passwordField;
+	private final Action action = new SwingAction();
+	private final Action action_1 = new SwingAction_1();
+	/**
+	 * Create the application.
+	 */
+	public Login() {
+		initialize();
+		connection=sqliteConnection.dbConnector();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frmAutentificare = new JFrame();
+		frmAutentificare.setForeground(Color.BLACK);
+		frmAutentificare.setFont(new Font("Arial", Font.BOLD, 32));
+		frmAutentificare.setTitle(" Life+");
+		BorderLayout borderLayout = (BorderLayout) frmAutentificare.getContentPane().getLayout();
+		borderLayout.setVgap(5);
+		borderLayout.setHgap(5);
+		
+		JPanel panel = new JPanel();
+		frmAutentificare.getContentPane().add(panel, BorderLayout.CENTER);
+		panel.setLayout(null);
+		
+		txtUsername = new JTextField();
+		txtUsername.setFont(new Font("Arial", Font.BOLD, 32));
+		txtUsername.setBounds(279, 71, 266, 51);
+		panel.add(txtUsername);
+		txtUsername.setColumns(10);
+		
+		JLabel lblUsername = new JLabel("Utilizator");
+		lblUsername.setFont(new Font("Arial", Font.BOLD, 32));
+		lblUsername.setBounds(58, 76, 193, 33);
+		panel.add(lblUsername);
+		
+		passwordField = new JPasswordField();
+		passwordField.setFont(new Font("Arial", Font.BOLD, 32));
+		passwordField.setBounds(279, 178, 266, 51);
+		panel.add(passwordField);
+		
+		JLabel lblPassword = new JLabel("Parola");
+		lblPassword.setFont(new Font("Arial", Font.BOLD, 32));
+		lblPassword.setBounds(58, 180, 193, 38);
+		panel.add(lblPassword);
+		
+		PanelOptions options = new PanelOptions();
+				
+		JButton btnLogin = new JButton("Autentificare");
+		btnLogin.setFont(new Font("Arial", Font.BOLD, 28));
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent args0) {
+				try{
+					String querry="select * from users where username=? and password=? ";
+					PreparedStatement pst = connection.prepareStatement(querry);
+					pst.setString(1, txtUsername.getText());
+					pst.setString(2, passwordField.getText());
+					
+					ResultSet rs=pst.executeQuery();
+					int count = 0;
+					while (rs.next()) {
+						count = count + 1;
+						
+					}
+					if(count == 1) {
+						JOptionPane.showMessageDialog(null, "Felicitari, v-ati logat cu succes.");
+						
+						frmAutentificare.setContentPane(options);
+						frmAutentificare.invalidate();
+						frmAutentificare.validate();
+
+					} else if (count < 1){
+						JOptionPane.showMessageDialog(null, "Utilizatorul sau parola sunt incorecte");
+					} else {
+						JOptionPane.showMessageDialog(null, "Utilizatorul sau parola sunt incorecte.");
+					}
+					rs.close();
+					pst.close();
+				} catch (Exception ex){
+					JOptionPane.showMessageDialog(null, ex);
+				} 
+			}
+		});
+		btnLogin.setBounds(15, 276, 216, 60);
+		panel.add(btnLogin);
+		
+		JButton btnIesire = new JButton("Iesire");
+		btnIesire.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
+		btnIesire.setFont(new Font("Arial", Font.BOLD, 32));
+		btnIesire.setBounds(291, 276, 216, 60);
+		panel.add(btnIesire);
+		frmAutentificare.setBounds(100, 100, 582, 455);
+		frmAutentificare.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	private class SwingAction extends AbstractAction {
+		public SwingAction() {
+			putValue(NAME, "SwingAction");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+		}
+		public void actionPerformed(ActionEvent e) {
+		}
+	}
+	private class SwingAction_1 extends AbstractAction {
+		public SwingAction_1() {
+			putValue(NAME, "SwingAction_1");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+		}
+		public void actionPerformed(ActionEvent e) {
+		}
+	}
+}
